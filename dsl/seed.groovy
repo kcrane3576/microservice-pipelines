@@ -43,5 +43,4 @@ def buildPipelineJobs() {
     createMultibranchPipelineJob(testName, repoUrl)
 }
 
-def pipelineConfig = getPipelineConfig()
 buildPipelineJobs()
