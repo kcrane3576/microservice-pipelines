@@ -1,46 +1,26 @@
-def createPipelineJob(jobName, repoUrl) {
-    pipelineJob(jobName) {
-        definition {
-            cpsScm {
-                scm {
-                    git {
-                        remote {
-                            url(repoUrl)
-                        }
-                        branches('master')
-                        extensions {
-                            cleanBeforeCheckout()
-                        }
-                    }
-                }
-                scriptPath("Jenkinsfile")
-            }
+def call(){
+    node {
+        stage('Checkout') {
+            checkout scm
+        }
+
+        // Execute different stages depending on the job
+        if(env.JOB_NAME.contains("deploy")){
+            packageArtifact()
+        } else if(env.JOB_NAME.contains("test")) {
+            buildAndTest()
         }
     }
 }
 
-def createMultibranchPipelineJob(jobName, repoUrl) {
-    multibranchPipelineJob(jobName) {
-        branchSources {
-            git {
-                remote(repoUrl)
-                includes('*')
-            }
-        }
-        triggers {
-            cron("H/5 * * * *")
-        }
+def packageArtifact(){
+    stage("Package artifact") {
+        sh "mvn package"
     }
 }
 
-def buildPipelineJobs() {
-    def repo = "https://github.com/kcrane3576/"
-    def repoUrl = repo + jobName + ".git"
-    def deployName = jobName + "_deploy"
-    def testName = jobName + "_test"
-
-    createPipelineJob(deployName, repoUrl)
-    createMultibranchPipelineJob(testName, repoUrl)
+def buildAndTest(){
+    stage("Backend tests"){
+        sh "mvn test"
+    }
 }
-
-buildPipelineJobs()
