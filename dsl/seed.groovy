@@ -39,8 +39,8 @@ def buildPipelineJobs() {
     def deployName = jobName + "_deploy"
     def testName = jobName + "_test"
 
-    createDeploymentJob(jobName, repoUrl)
-    createTestJob(jobName, repoUrl)
+    createDeploymentJob(deployName, repoUrl)
+    createTestJob(testName, repoUrl)
 }
 
 buildPipelineJobs()
